@@ -33,8 +33,10 @@ export interface StatusStep {
   /** Whether the note / calendar options are offered at all. */
   canNote: boolean;
   canEvent: boolean;
+  canIcs: boolean;
   writeNote: boolean;
   createEvent: boolean;
+  createIcs: boolean;
 }
 
 export interface State {
@@ -78,6 +80,7 @@ export type Action =
       suggested: string | null;
       canNote: boolean;
       canEvent: boolean;
+      canIcs: boolean;
     }
   | { t: "step"; patch: Partial<StatusStep> }
   | { t: "writeStart" }
@@ -156,8 +159,12 @@ export function reducer(state: State, action: Action): State {
           regressionAck: false,
           canNote: action.canNote,
           canEvent: action.canEvent,
+          canIcs: action.canIcs,
           writeNote: action.canNote,
           createEvent: action.canEvent,
+          // Google Calendar synced to Calendar.app would make a .ics a duplicate,
+          // so it is only pre-checked when Google Calendar is not in use.
+          createIcs: action.canIcs && !action.canEvent,
         },
       };
 

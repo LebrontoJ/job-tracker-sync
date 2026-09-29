@@ -36,7 +36,10 @@ export async function invalidateToken(token: string): Promise<void> {
   await chrome.identity.removeCachedAuthToken({ token });
 }
 
-/** Revokes the grant server-side and clears the local cache. */
+/**
+ * Revokes the grant server-side (best effort) and clears every cached token,
+ * so the next sign-in starts from a clean consent flow.
+ */
 export async function signOut(): Promise<void> {
   try {
     const { token } = await chrome.identity.getAuthToken({ interactive: false });
@@ -44,11 +47,11 @@ export async function signOut(): Promise<void> {
       await fetch(`https://oauth2.googleapis.com/revoke?token=${encodeURIComponent(token)}`, {
         method: "POST",
       });
-      await invalidateToken(token);
     }
   } catch {
-    // Nothing cached - already signed out.
+    // No cached token - nothing to revoke.
   }
+  await chrome.identity.clearAllCachedAuthTokens();
 }
 
 /**

@@ -1,14 +1,15 @@
 const ISO_RE =
   /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})(?::(\d{2})(?:\.\d+)?)?\s*(Z|[+-]\d{2}:?\d{2})?$/;
 
-interface Parts {
+export interface InterviewTimeParts {
   date: string;
   time: string;
   seconds: string;
   offset: string | null;
 }
 
-function parse(iso: string): Parts | null {
+/** Splits an ISO-8601-ish time; null when it cannot be understood. */
+export function parseInterviewTime(iso: string): InterviewTimeParts | null {
   const m = ISO_RE.exec(iso.trim());
   if (!m) return null;
   const rawOffset = m[4];
@@ -25,7 +26,7 @@ function parse(iso: string): Parts | null {
  * Unparseable input is returned unchanged.
  */
 export function formatInterviewTime(iso: string): string {
-  const p = parse(iso);
+  const p = parseInterviewTime(iso);
   if (!p) return iso.trim();
   const suffix = p.offset ? ` (${p.offset === "Z" ? "UTC" : `UTC${p.offset}`})` : "";
   return `${p.date} ${p.time}${suffix}`;
@@ -49,7 +50,7 @@ export interface CalendarEvent {
 
 /** Builds a Google Calendar `events.insert` body, or null if the time is unparseable. */
 export function buildCalendarEvent(input: CalendarEventInput): CalendarEvent | null {
-  const p = parse(input.interviewTime);
+  const p = parseInterviewTime(input.interviewTime);
   if (!p) return null;
   const minutes = input.durationMinutes ?? 60;
   const summary = ["面试", input.company, input.role].filter(Boolean).join(" - ");

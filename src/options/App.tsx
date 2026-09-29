@@ -67,6 +67,12 @@ export function App() {
       setNotice({ kind: "ok", text: "已授权 Google 账号" });
     });
 
+  const resetAuth = () =>
+    run(async () => {
+      await call("auth:signOut", undefined);
+      setNotice({ kind: "ok", text: "已重置授权,请重新点击「授权 Google 账号」" });
+    });
+
   const loadSheets = () =>
     run(async () => {
       const spreadsheetId = extractSpreadsheetId(sheetUrl);
@@ -159,6 +165,9 @@ export function App() {
         <div className="actions" style={{ justifyContent: "flex-start" }}>
           <button disabled={busy} onClick={() => void authorize()}>
             授权 Google 账号
+          </button>
+          <button disabled={busy} onClick={() => void resetAuth()}>
+            重置授权
           </button>
           <button
             className="primary"

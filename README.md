@@ -19,7 +19,8 @@ new status from the column's own dropdown options, and writes it back.
 - Status suggestions mapped from email type, reading the status column's data
   validation options, with regression protection
 - Write-time verification so the wrong row is never overwritten
-- Optional: save interview time to a notes column and create a Calendar event
+- Optional: save interview time to a notes column, create a Google Calendar event,
+  and/or download an `.ics` file that imports into Apple Calendar (Calendar.app)
 
 ## Privacy
 
