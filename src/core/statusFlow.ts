@@ -20,6 +20,7 @@ export function isRegression(current: string, next: string, order: readonly stri
 
 /** Fuzzy keywords per type. Short ASCII keywords must match a whole word. */
 const TYPE_KEYWORDS: Record<EmailType, string[]> = {
+  applied: ["applied", "submitted", "已投递", "已投"],
   interview: ["interview", "面试", "约面"],
   rejection: ["reject", "declin", "拒"],
   offer: ["offer"],

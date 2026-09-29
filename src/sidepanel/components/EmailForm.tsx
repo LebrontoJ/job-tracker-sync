@@ -57,7 +57,9 @@ export function EmailForm({
           ))}
         </select>
         {form.type === "other" && (
-          <p className="muted">这封邮件看起来不是拒信 / 面试 / OA / Offer,你仍可手动操作。</p>
+          <p className="muted">
+            这封邮件看起来不是投递确认 / 拒信 / 面试 / OA / Offer,你仍可手动操作。
+          </p>
         )}
       </div>
 

@@ -1,6 +1,7 @@
 import type { EmailType } from "../core/types";
 
 export const TYPE_LABELS: Record<EmailType, string> = {
+  applied: "已投递",
   rejection: "拒信",
   interview: "约面试",
   assessment: "OA / 测评",

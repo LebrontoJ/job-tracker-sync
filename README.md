@@ -4,8 +4,8 @@ A Manifest V3 Chrome extension that keeps your Google Sheets job-application
 tracker in sync with your Gmail inbox.
 
 Open a job-related email in Gmail and the side panel automatically extracts the
-company, role, and email type (rejection, interview, online assessment, or
-offer). One click finds the matching row across your sheets, lets you pick the
+company, role, and email type (application confirmation, rejection, interview,
+online assessment, or offer). One click finds the matching row across your sheets, lets you pick the
 new status from the column's own dropdown options, and writes it back.
 
 ## Features
