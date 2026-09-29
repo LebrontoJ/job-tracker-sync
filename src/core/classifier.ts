@@ -42,6 +42,18 @@ const KEYWORDS: Record<ClassifiableType, string[]> = {
     "在线测评",
     "笔试",
   ],
+  applied: [
+    "thank you for applying",
+    "thanks for applying",
+    "we received your application",
+    "we have received your application",
+    "application received",
+    "application has been received",
+    "successfully submitted",
+    "your application has been submitted",
+    "已收到您的申请",
+    "投递成功",
+  ],
   offer: [
     "pleased to offer",
     "excited to offer",
@@ -52,7 +64,13 @@ const KEYWORDS: Record<ClassifiableType, string[]> = {
 };
 
 /** When several types match, the earlier entry wins. */
-const PRIORITY: ClassifiableType[] = ["offer", "rejection", "interview", "assessment"];
+const PRIORITY: ClassifiableType[] = ["offer", "rejection", "interview", "assessment", "applied"];
+
+/**
+ * Confirmation wording ("thank you for applying") also opens many rejections
+ * and interview invites, so it only counts when nothing more specific matched.
+ */
+const WEAK: ClassifiableType = "applied";
 
 export interface Classification {
   type: EmailType;
@@ -73,7 +91,8 @@ export function classifyEmail(subject: string, body: string): Classification {
     if (found.length > 0) hits[type] = found;
   }
 
-  const matched = PRIORITY.filter((t) => hits[t]);
+  let matched = PRIORITY.filter((t) => hits[t]);
+  if (matched.some((t) => t !== WEAK)) matched = matched.filter((t) => t !== WEAK);
   const winner = matched[0];
   if (!winner) return { type: "other", confidence: "low", hits };
   return { type: winner, confidence: matched.length === 1 ? "high" : "low", hits };

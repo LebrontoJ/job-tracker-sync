@@ -52,6 +52,13 @@ describe("suggestStatus", () => {
     ).toBe("OA sent");
   });
 
+  it("suggests the applied status", () => {
+    expect(suggestStatus("applied", ["Applied", "OA", "Interview"], mapping)).toBe("Applied");
+    // Falls back to keywords when the sheet uses different wording.
+    expect(suggestStatus("applied", ["待投递", "已投递", "面试中"], mapping)).toBe("已投递");
+    expect(suggestStatus("applied", ["Backlog", "Interview"], mapping)).toBeNull();
+  });
+
   it("returns null when nothing fits", () => {
     expect(suggestStatus("other", ["Applied"], mapping)).toBeNull();
     expect(suggestStatus("offer", ["Applied"], mapping)).toBeNull();

@@ -8,6 +8,7 @@ export function defaultConfig(): Config {
     geminiModel: "",
     sheets: [],
     statusMapping: {
+      applied: "Applied",
       rejection: "Rejected",
       interview: "Interview",
       assessment: "OA",

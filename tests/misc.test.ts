@@ -3,7 +3,9 @@ import { columnRange, quoteSheet } from "../src/core/a1";
 import { buildAiUserPrompt, parseAiResponse } from "../src/core/aiSchema";
 import { buildIcs, icsFileName } from "../src/core/ics";
 import { colToIndex, guessColumns, indexToCol } from "../src/core/columns";
-import { defaultConfig, validateConfig } from "../src/core/config";
+import { defaultConfig, normalizeConfig, validateConfig } from "../src/core/config";
+import { EMAIL_TYPES } from "../src/core/types";
+import type { Config } from "../src/core/types";
 import { buildCalendarEvent, formatInterviewTime } from "../src/core/interviewTime";
 import { mergeParsed, needsAi } from "../src/core/mergeParsed";
 import { extractSpreadsheetId } from "../src/core/sheetUrl";
@@ -171,6 +173,21 @@ describe("interview time", () => {
         fallbackTimeZone: "UTC",
       }),
     ).toBeNull();
+  });
+});
+
+describe("defaultConfig", () => {
+  it("maps every email type, with applied -> Applied", () => {
+    expect(defaultConfig().statusMapping.applied).toBe("Applied");
+    expect(Object.keys(defaultConfig().statusMapping).sort()).toEqual([...EMAIL_TYPES].sort());
+  });
+
+  it("fills the new applied mapping into configs saved before it existed", () => {
+    const old = { statusMapping: { rejection: "已拒" } } as Partial<Config>;
+    expect(normalizeConfig(old).statusMapping).toMatchObject({
+      applied: "Applied",
+      rejection: "已拒",
+    });
   });
 });
 

@@ -1,4 +1,11 @@
-export const EMAIL_TYPES = ["rejection", "interview", "assessment", "offer", "other"] as const;
+export const EMAIL_TYPES = [
+  "applied",
+  "rejection",
+  "interview",
+  "assessment",
+  "offer",
+  "other",
+] as const;
 export type EmailType = (typeof EMAIL_TYPES)[number];
 
 export interface SheetMapping {

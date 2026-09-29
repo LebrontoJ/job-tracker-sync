@@ -37,8 +37,25 @@ describe("classifyEmail", () => {
     );
   });
 
+  it("detects application confirmations", () => {
+    expect(
+      classifyEmail("Thanks for applying", "We received your application for Software Engineer."),
+    ).toMatchObject({ type: "applied", confidence: "high" });
+    expect(classifyEmail("Application received", "").type).toBe("applied");
+  });
+
+  it("does not let confirmation wording weaken a more specific type", () => {
+    // Rejections and interview invites often open with "thank you for applying".
+    expect(
+      classifyEmail("Update", "Thank you for applying. Unfortunately, we are not moving forward."),
+    ).toMatchObject({ type: "rejection", confidence: "high" });
+    expect(
+      classifyEmail("Next steps", "Thank you for applying! Please share your availability."),
+    ).toMatchObject({ type: "interview", confidence: "high" });
+  });
+
   it("falls back to other with low confidence", () => {
-    expect(classifyEmail("Thanks for applying", "We received your application.")).toMatchObject({
+    expect(classifyEmail("Hello", "Just checking in about something.")).toMatchObject({
       type: "other",
       confidence: "low",
     });
