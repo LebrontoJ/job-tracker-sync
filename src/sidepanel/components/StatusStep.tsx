@@ -74,7 +74,17 @@ export function StatusStep(props: Props) {
             checked={step.createEvent}
             onChange={(e) => props.onChange({ createEvent: e.target.checked })}
           />
-          同时创建 Google Calendar 事件
+          同时创建 Google Calendar 事件({props.interviewTimeLabel})
+        </label>
+      )}
+      {step.canIcs && (
+        <label className="row">
+          <input
+            type="checkbox"
+            checked={step.createIcs}
+            onChange={(e) => props.onChange({ createIcs: e.target.checked })}
+          />
+          下载 .ics 文件,导入 Mac 日历(已把 Google 日历同步到 Mac 的话无需勾选,以免重复)
         </label>
       )}
 

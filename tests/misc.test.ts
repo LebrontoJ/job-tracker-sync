@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { columnRange, quoteSheet } from "../src/core/a1";
 import { buildAiUserPrompt, parseAiResponse } from "../src/core/aiSchema";
+import { buildIcs, icsFileName } from "../src/core/ics";
 import { colToIndex, guessColumns, indexToCol } from "../src/core/columns";
 import { defaultConfig, validateConfig } from "../src/core/config";
 import { buildCalendarEvent, formatInterviewTime } from "../src/core/interviewTime";
@@ -193,5 +194,36 @@ describe("validateConfig", () => {
       ],
     };
     expect(validateConfig(config)).toEqual(["「S」职位列必须是列字母(如 B)"]);
+  });
+});
+
+describe("buildIcs", () => {
+  const base = {
+    company: "Stripe",
+    role: "SWE; Backend, Sr",
+    uid: "abc@job-tracker-sync",
+    now: new Date("2026-09-29T12:00:00Z"),
+  };
+
+  it("converts a time with offset to UTC", () => {
+    const ics = buildIcs({ ...base, interviewTime: "2026-10-08T14:00:00-04:00" })!;
+    expect(ics).toContain("DTSTART:20261008T180000Z\r\n");
+    expect(ics).toContain("DTEND:20261008T190000Z\r\n");
+    expect(ics).toContain("DTSTAMP:20260929T120000Z\r\n");
+    expect(ics).toContain("SUMMARY:面试 - Stripe - SWE\\; Backend\\, Sr");
+    expect(ics.startsWith("BEGIN:VCALENDAR\r\n")).toBe(true);
+    expect(ics.endsWith("END:VCALENDAR\r\n")).toBe(true);
+  });
+
+  it("uses floating local time when there is no offset", () => {
+    const ics = buildIcs({ ...base, interviewTime: "2026-10-08 23:30", durationMinutes: 45 })!;
+    expect(ics).toContain("DTSTART:20261008T233000\r\n");
+    expect(ics).toContain("DTEND:20261009T001500\r\n");
+  });
+
+  it("returns null for unparseable times and builds safe file names", () => {
+    expect(buildIcs({ ...base, interviewTime: "sometime" })).toBeNull();
+    expect(icsFileName("Two Sigma / NYC")).toBe("interview-Two-Sigma-NYC.ics");
+    expect(icsFileName("///")).toBe("interview-event.ics");
   });
 });

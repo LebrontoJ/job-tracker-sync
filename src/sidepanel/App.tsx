@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { validateConfig, defaultConfig } from "../core/config";
 import { emailSignature } from "../core/emailSignature";
-import { formatInterviewTime } from "../core/interviewTime";
+import { buildIcs, icsFileName } from "../core/ics";
+import { formatInterviewTime, parseInterviewTime } from "../core/interviewTime";
 import { isRegression, isSameStatus } from "../core/statusFlow";
 import type { Config } from "../core/types";
 import { call } from "../shared/client";
@@ -12,6 +13,7 @@ import { EmailForm } from "./components/EmailForm";
 import { StatusStep } from "./components/StatusStep";
 import { initialState, reducer } from "./state";
 import type { FieldName, Phase } from "./state";
+import { downloadTextFile } from "./download";
 import { useGmailEmail } from "./useGmailEmail";
 
 const BUSY_PHASES: readonly Phase[] = ["PARSING", "SEARCHING", "LOADING_OPTIONS", "WRITING"];
@@ -79,14 +81,16 @@ export function App() {
     call("status:options", { candidate, type: form.type })
       .then((res) => {
         const sheet = config.sheets.find((s) => s.sheetTitle === candidate.sheetTitle);
-        const isInterview = form.type === "interview" && form.interviewTime.trim() !== "";
+        const hasTime = form.type === "interview" && form.interviewTime.trim() !== "";
+        const schedulable = hasTime && parseInterviewTime(form.interviewTime) !== null;
         dispatch({
           t: "optionsDone",
           options: res.options,
           source: res.source,
           suggested: res.suggested,
-          canNote: isInterview && !!sheet?.noteCol,
-          canEvent: isInterview && !!config.enableCalendar,
+          canNote: hasTime && !!sheet?.noteCol,
+          canEvent: schedulable && !!config.enableCalendar,
+          canIcs: schedulable,
         });
       })
       .catch((err: unknown) => dispatch({ t: "fail", message: messageOf(err), back }));
@@ -122,6 +126,19 @@ export function App() {
         message += ",并已创建日历事件";
       } catch (err) {
         message += `;但日历事件创建失败:${messageOf(err)}`;
+      }
+    }
+    if (step.createIcs && time) {
+      const ics = buildIcs({
+        company: form.company,
+        role: form.role,
+        interviewTime: time,
+        uid: `${crypto.randomUUID()}@job-tracker-sync`,
+        now: new Date(),
+      });
+      if (ics) {
+        downloadTextFile(icsFileName(form.company), ics, "text/calendar");
+        message += ",已下载 .ics 文件(双击导入 Mac 日历)";
       }
     }
     dispatch({ t: "writeDone", message });
