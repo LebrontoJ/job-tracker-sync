@@ -1,0 +1,35 @@
+@import "../shared/base.css";
+
+main {
+  padding: 16px;
+}
+.field.armed input {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.candidate {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 6px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.candidate[aria-checked="true"] {
+  border-color: var(--accent);
+  outline: 1px solid var(--accent);
+}
+.candidate .cells {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.banner {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin-bottom: 12px;
+}

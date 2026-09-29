@@ -1,0 +1,46 @@
+@import "../shared/base.css";
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+section.card h2 {
+  font-size: 14px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.sheet-head label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--text);
+  font-size: 13px;
+  margin: 0;
+}
+.status-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.status-row label {
+  margin: 0;
+}
+input[type="color"] {
+  padding: 0;
+  height: 30px;
+}
+.hint {
+  margin: 4px 0 0;
+}
